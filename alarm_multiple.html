@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+</head>
+<body>
+    <script type="text/javascript">
+
+        var snd = new Audio("clock.mp3"); // buffers automatically when created
+        // Get
+        if (localStorage.getItem("test")) {
+            data = JSON.parse(localStorage.getItem("test"));
+        } else {
+            // No data, start with an empty array
+            data = [];
+        }
+
+        var today = new Date();
+        var d = today.getDay();
+        var h = today.getHours();
+        var m = today.getMinutes();
+        //since page reloads then we will just check it first for the data
+        function check() {
+        //current system values
+        console.log("inside check");
+        //if time found in the array the create a alert and delete that array object
+        for(var i = 0; i < data.length; i++) {
+            var today = new Date();
+            var d = today.getDay();
+            var h = today.getHours();
+            var m = today.getMinutes();
+
+            if (data[i].hours == h && data[i].minutes == m && data[i].dates == d ) {
+                data.splice(i,1);
+                localStorage["test"] = JSON.stringify(data);
+                snd.play();
+                alert("Wake Up Man ! Alarm is over ");
+                }
+            }
+            if((data.length)>0)
+            {
+                setTimeout(check, 1000);
+            }
+
+        }
+        //we do not want to run the loop everytime so we will use day to check
+        for(var i =0 ; i< data.length; i++)
+        {
+            if((data[i].dates == d) && (data[i].hours >= h) && (data[i].minutes >= m) )
+            {
+                check();
+            }
+        }
+
+        console.log(data);
+
+
+        var room = 1;
+        //var data = [];
+        var i = 0;
+        function GetDynamicTextBox(){
+
+            var date = new Date();
+            var h = date.getHours();
+            var m = date.getMinutes();
+            var d = date.getDay();
+
+            return '<div>Alarm ' + room +':</div><input type="number" style="text-align:center;margin:auto;padding:0px;width:200px;" min="0" max="23" value ='+h+' placeholder="hour" id="a'+room+'" /> <input type="number" min="0" max="59" placeholder="minute" style="text-align:center; padding:0px; margin:auto; width:200px;" id="b'+room+'" value ='+m+' /> <select id="c'+room+'" style="margin:auto; width:150px; padding:10px; color: black" required> <option value="1">Monday</option> <option value="2">Tuesday</option> <option value="3">Wednesday</option> <option value="4">Thursday</option> <option value="5">Friday</option> <option value="6">Saturday</option> <option value="0">Sunday</option> </select> <input type="button" value ="Set" onclick = "AddAlarm('+room+');" /> <input type="button" value ="Remove" onclick = "RemoveTextBox(this)" />';
+        }
+        function AddTextBox() {
+            room++;
+            var div = document.createElement('DIV');
+            div.innerHTML = GetDynamicTextBox("");
+            document.getElementById("TextBoxContainer").appendChild(div);
+        }
+
+        function RemoveTextBox(div) {
+            document.getElementById("TextBoxContainer").removeChild(div.parentNode);
+        }
+
+        function RecreateDynamicTextboxes() {
+                var html = "";
+                html += "<div>" + GetDynamicTextBox() + "</div>";
+                document.getElementById("TextBoxContainer").innerHTML = html;
+        }
+        window.onload = RecreateDynamicTextboxes;
+
+        function AddAlarm(values){
+            var hour = $('#a'+values).val();
+            var minute = $('#b'+values).val();
+            var date = $('#c'+values).val();
+
+            //get the current time and date
+            var today = new Date();
+
+            //current system values
+            var d = today.getDay();
+            var h = today.getHours();
+            var m = today.getMinutes();
+
+            //first check that whether a same date present in the array or not then push it
+            var found = -1;
+            for(var i = 0; i < data.length; i++) {
+                if (data[i].hours == hour && data[i].minutes == minute && data[i].dates == date ) {
+                    found = 0;
+                    break;
+                }
+            }
+
+            //if value does not present then push it into the array
+            if(found == -1)
+            {
+                data.push({hours: hour, minutes: minute, dates: date});
+                //storing it into localstorage
+                localStorage.setItem("test", JSON.stringify(data));
+            }
+            else
+            {
+                alert("Same value Exists");
+            }
+
+            //console.log(data);
+
+            function check() {
+                //current system values
+                //console.log("inside check");
+                //if time found in the array the create a alert and delete that array object
+                for(var i = 0; i < data.length; i++) {
+                    var today = new Date();
+                    var d = today.getDay();
+                    var h = today.getHours();
+                    var m = today.getMinutes();
+
+                    if (data[i].hours == h && data[i].minutes == m && data[i].dates == d ) {
+                        data.splice(i,1);
+                        snd.play();
+                        alert("Wake Up Man ! Alarm is over ");
+                    }
+                }
+                if((data.length)>0)
+                {
+                    setTimeout(check, 1000);
+                }
+
+            }
+            //we do not want to run the loop everytime so we will use day to check
+            for(var i =0 ; i< data.length; i++)
+            {
+                if((data[i].dates == d) && (data[i].hours >= h) && (data[i].minutes >= m))
+                {
+                    check();
+                }
+            }
+        }
+
+
+
+        </script>
+    
+</body>
+</html>
